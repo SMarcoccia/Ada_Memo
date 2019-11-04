@@ -47,6 +47,8 @@
       - Créer une chaîne non contrainte (taille illimité). 
     - `Ada.Directories` :
       - Gestion des fichiers et répertoires.
+    - `Ada.Strings.Fixed` :
+      - Manipule des chaînes de type String (taille fixe).
     - etc . . .
 
 <a id="creationPackage_Up"></a>
@@ -60,11 +62,16 @@
 
 <a id="Typage"></a>
 ## <a href="#Sommaire">Typage : </a>
-  - Integer : les entier signés (peuvent être négatif).
-  - Natural : les entier non signés.
+  - `Integer` : les entier signés (peuvent être négatif).
+  - `Natural` : les entier non signés.
    0 est compté comme un positif.
-  - Float : nb à virgule (peuvent être positif ou négatif).
-  - Character : lettre (`'a'`, `'B'`, etc).
+  - `Float` : nb à virgule (peuvent être positif ou négatif).
+  - `Character` : lettre (`'a'`, `'B'`, etc).
+  - `Boolean` : 
+    - afficher en valeur numérique :
+      ```ada
+      put(Integer'IMAGE(Boolean'POS(a)));
+      ```
 
 <a id="Declaration"></a>
 ## <a href="#Sommaire">Déclaration : </a>
@@ -108,29 +115,80 @@
   - `put_line()` : 
     - Affiche chaîne de cara ou un cara + saut de ligne. <br>
   Package : `integer_text_io`.
-  - `get()` : pour récupéré le choix utilisateur.
-  Ex. : get(age); la variable age récupère la saisie utilisateur (peut être une chaîne de  cara ou un cara ou un entier ou un float numérique).
+  
+  <a id="skip_line_Up"></a>
+  - `get()` : récupère la saisie clavier.
+    - Ex. : get(age); la variable age récupère la saisie utilisateur (peut être une chaîne de cara. ou un cara. ou un entier ou un float).
+    - Note : tjrs mettre <a href="#skipe_line">skipe_line</a> après.
+  
+  - `get_line()` : récupère la saisie clavier.
+    - Paramètres :
+      - Item (type : string) : récupère une chaîne de cara.
+      - Last (type : natural): longueur de la chaîne saisie au clavier (vaudra au maximum la taille de la chaîne déclarée).
+    
+    - Notes : 
+      - Fait un skipe_line auto si Last < taille de la chaîne déclarée.
+      - Si Last = taille de la chaîne déclarée on devra ajouté manuellement skipe_line.
+        - Ex. : 
+          ```ada 
+          procedure mySaisie is
+            txt : string(1..10); -- 10 est la taille de la chaîne déclarée.
+            lgString : natural;
+          begin
+            get_line(txt, lgString);
+            if lgString = txt'length then
+              skipe_line;
+            end if;
+            -- Affiche la longueur de la chaîne entré.
+            put_line(text(1..lgString));
+          end mySaisie;
+          ```
+  - `get_line()` : récupère un cara. ou une chaîne dans un fichier.
+    - Paramètres :
+      - File (type File_Type) : le nom du fichier.
+      - Item (type String) : récupère un cara. ou une chaîne.
+      - Last (type natural) : taille de la chaîne récupérée.
+
   - `integer()` : float to integer. Convertit un float en integer.
+  
   - `float()` : integer to float. Convertit un integer en float.
+  
   - `integer'image(1);` : convertit un integer en string.
+  
   - `integer'value("salut");` : convertit un string en integer.
 
 <a id="Mots_cles"></a>
 ## <a href="#Sommaire">Mots clés : </a>
 
   - `new_line` : saut de ligne.
+  
   - `with` : Dit quel package on veut utilisé.
+  
   - `use` : Appel le package qu'on veut utilisé.
+  
   - `procedure` : début de la fonction qui précéde son nom. Ex. : procedure MaFction.
+  
   - `is` : début du corps de la fonction. C'est ici qu'on met les déclarations.
+  
   - `begin` : Commencement des instructions.
+  
   - `end` : Fin de la fonction. Sert aussi de fin de bloc de déclaration.
+  
   - `Width =>` : Supprime les espaces à gauche lors d'un affichage. Ex. : put(10, Width => 0); Ici,
   Supprime tout les espaces.
+  
   - `Exp =>` (Exposant) : supprime l'exposant lors de l'affichage. Ex. : put(1.85, Exp => 0)
+  
   - `Aft =>` (after) : précise le nb de chiffre après la virgule. Ex. put(1.85, Exp => 0, Aft => 0);
-  - `skip_line` : ignore le symbole de fin de ligne et assure que le buffer clavier est vide.
+
+  <a id="skipe_line"></a>
+  - <a href="#skip_line_Up">↑</a> `skip_line` : ce place tjrs après get.
+    -  Pour :
+        - Sauté le cara. de fin de ligne.
+        - Vider le buffer clavier.
+  
   - `constant` : empêche la modification de la variable.
+  
   - `declare` : déclare une variable temporaire ; supprimer à la fin du bloc de déclaration `end`.<br> `declare` peut être déclaré comme pour les variable. Ex. : `Bloc_Declaration : declare`.
 
   - `'base` : représente le type de base d'un autre type ou sous-type. Attribut utilisé pour accéder à une valeur d'un type de base.
@@ -160,6 +218,13 @@
             n := character'pos('z');
             c := character'val(165);
           ```
+    - Package Standard (type Character):
+      - Permet d'utiliser les caractères ASCII. <br>
+        - Ex. : 
+        ```ada
+        put("Un saut de ligne : " & ASCII.LF);
+        ```
+        - Lien : https://en.wikibooks.org/wiki/Ada_Programming/Libraries/Standard/Apex  
 
   - `**` : Puissance. Ex. : 5**2 = 25.
   - `mod` : Pour modulo.
@@ -204,7 +269,7 @@
   - `<=` &nbsp; "inférieur ou égale à". <br> 
   - `>=` &nbsp; "plus grand ou égale à". <br> 
 
-- <a id="Booleen_up"></a>Booléen : 
+- <a id="Booleen_up"></a>Les opérateurs booléens : 
   - `Not` : non
   - `and` : et
   - `or`  : ou
@@ -314,10 +379,24 @@ Ex. : <a href="#Ope_Appart">lien</a>
       <a id="tab_Declaration"></a>
       - <a href="#menu">↑</a> Déclaration :
         ```ada 
-          type tableau is array (0..5) of integer;
-          MyArray : tableau;
+        type tableau is array (1..5) of integer;
+        MyArray : tableau;
         ```
-        Note : on peut partir de 1.
+        ```ada 
+        type index is range 1..5;
+
+        type tableau is array (index) of natural;
+        MyArray : tableau;
+        ```
+        
+        ```ada
+        type MyInt is range 1..10;
+        type index is range 1..5;
+
+        type tableau is array (index) of MyInt;
+        MyArray : tableau;
+        ```
+
       
       <a id="tab_Affectation"></a>
       - <a href="#menu">↑</a> Affectation global :
@@ -325,7 +404,7 @@ Ex. : <a href="#Ope_Appart">lien</a>
           ```ada
             procedure main is
               tailleMax : constant natural := 5;
-              type tableau is array (0..tailleMax) of integer;
+              type tableau is array (1..tailleMax) of integer;
               MyArray : tableau;
             begin
               MyArray := (1,2,3,4,5,6);
@@ -337,13 +416,13 @@ Ex. : <a href="#Ope_Appart">lien</a>
           ```
         - Valeur :
           ```ada
-            MyArray(0) : 1;
-            MyArray(1) : 2;
+            MyArray(1) : 1;
+            MyArray(2) : 2;
             ...
           ```
         - Boucle :
           ```ada
-            for i in 0..5 loop
+            for i in 1..5 loop
               MyArray(i) := 0;
             end loop
           ```
@@ -373,8 +452,12 @@ Ex. : <a href="#Ope_Appart">lien</a>
       - <a href="#menu">↑</a> Tableau à 2 dimenssions :
         - Prototype :
           ```ada       
-            type MyArray is array(0..1,0..5) of natural;
+            type MyArray is array(1..2,1..5) of natural;
           ```
+          Intervalles :
+          - 1..2 : nb de lignes.
+          - 1..5 : nb de colonnes.
+
         - Initialisation :
           - Liste :
             ```ada
@@ -382,18 +465,20 @@ Ex. : <a href="#Ope_Appart">lien</a>
             ```
           - Boucle :
             ```ada
-              for i in 0..1 loop
-                for j in 0..5 loop
+              for i in 1..2 loop
+                for j in 1..5 loop
                   MyArray(i, j) := 0;
                 end loop;
               end loop;
             ```
           - Agrégat :
             ```ada
+            -- Ligne 1 que des 0.
+            -- Idem ligne 2.
             MyArray := (1 => (0,0,0,0), 2 =>(0,0,0,0));
-            
+            -- ou :
             MyArray := (1..2 => (0,0,0,0));
-            
+            -- ou :
             MyArray := (1..2 => (1..4 => 0));
             ```
       
@@ -444,11 +529,28 @@ Ex. : <a href="#Ope_Appart">lien</a>
     caractère : 
       
       <a id="String_Declaration"></a>
-      - <a href="#menu">↑</a> Déclaration :
-        ```ada
-          txt : string(1..6);
-        ```
-      
+      - <a href="#menu">↑</a> Déclaration et/ou initialisation :
+        - Note : obligation de mettre le nb de cara. de la taille max de la chaîne déclaré.
+        
+        - Ex. :
+          ```ada
+          procedure myString is
+            txt : string(1..10);
+            txt2 : string(1..10) := "Salut     "; -- 10 cara. obligatoire.
+          begin
+            txt := "Salut     "; -- 10 cara. obligatoire.
+          end myString;
+          ```
+        
+        - Restriction :
+          ```ada
+          procedure myString is
+            A : String; -- Déclaration illégale.
+          begin 
+            A := "world";
+          end;
+          ```
+
       <a id="String_AffectationGlobal"></a>
       - <a href="#menu">↑</a> Affectation global :
         ```ada
@@ -459,7 +561,7 @@ Ex. : <a href="#Ope_Appart">lien</a>
             txt : string(1..6);
           begin
             txt := "Salut";
-          endl manipString;
+          end manipString;
         ```
         ou :
         ```ada
@@ -470,7 +572,7 @@ Ex. : <a href="#Ope_Appart">lien</a>
             txt : string(1..6) := "Salut !"
           begin
             ...
-          endl manipString;
+          end manipString;
         ```
         ou encore :
         ```ada
@@ -481,7 +583,7 @@ Ex. : <a href="#Ope_Appart">lien</a>
             txt : string := "Salut !"
           begin
             ...
-          endl manipString;
+          end manipString;
         ```
       
       <a id="String_Manipulation"></a>
@@ -498,7 +600,7 @@ Ex. : <a href="#Ope_Appart">lien</a>
               idx : natural := 0;
             begin
               put(txt(idx));
-            endl manipString;
+            end manipString;
           ```
         - Utilisation des slices :
           ```ada
@@ -506,7 +608,7 @@ Ex. : <a href="#Ope_Appart">lien</a>
               txt : string := "Bonjour !"
             begin
               txt(4..7) := "soir";
-            endl manipString;
+            end manipString;
           ```
     
       <a id="String_Casse"></a>
@@ -570,7 +672,7 @@ Ex. : <a href="#Ope_Appart">lien</a>
             if txt1 > txt2
               then ...
 
-          endl myCompare;
+          end myCompare;
         ```
 
       <a id="String_SaisieClavier"></a>
@@ -606,7 +708,9 @@ Ex. : <a href="#Ope_Appart">lien</a>
         ```
 
       <a id="String_NonContrainte"></a>
+      <a id="string_non_contrainte_up"></a>
       - <a href="#menu">↑</a> Chaîne de caractère non contrainte :
+
         ```ada
           procedure myString is
             txt : unbounded_string;
@@ -614,9 +718,14 @@ Ex. : <a href="#Ope_Appart">lien</a>
             ...
           end myString;
         ```
-        Note : unbounded ne crée pas un tableau, mais une liste vide. 
+        Note   : unbounded ne crée pas un tableau, mais une liste vide. 
 
-        <a id="string_non_contrainte_up"></a>
+        Note 2 : il faut faire une conversion de la chaîne avec la fonction `to_unbounded_string()` pour obtenir un unbounded.
+        
+        Et `to_string()` pour l'inverse.
+
+
+
         Ex. : <a href="#string_non_contrainte">lien</a>
 
 <a id="Enum"></a>
@@ -699,9 +808,11 @@ d'appartenance.</a>
     - myPackage.ads :
       ```ada
           package myPackage is
+            
             type;
             procedure;
             function;
+
           end integer_array;
       ```
     - myPackage.adb :
@@ -939,17 +1050,17 @@ d'appartenance.</a>
 - Valeur par défaut d'une procédure :
   ```ada
     -- Evitera d'avoir à  mettre une valeur en paramètre.
-    Procedure MyFunction(nVal : natural := 1) is
+    Procedure MyProcedure(nVal : natural := 1) is
 
     begin;
       ...
-    end MyFunction;
+    end MyProcedure;
   ```
 
   - Spécifié le paramètre auquel on attribue une valeur :
   ```ada
     val1 := 1; val2 := 2;
-    MyFunction(val1, val2, afficheVal => true);
+    MyProcedure(val1, val2, afficheVal => true);
   ```
 
 - <a id="string_non_contrainte"></a>
@@ -988,6 +1099,12 @@ d'appartenance.</a>
 - Ada n'accepte pas les commentaire sur une ligne après un code. Message d'erreur : statement expected.
 
 - Prédicat : question posée attendant une réponse.
+
+- Paramètres :
+  - Effectif : 
+    - paramètres avec lesquels la fonction/procédure est effectivement appelée.
+  - Formel : 
+    - Arguments de la fonction/procédure. 
 
 <a id="Erreur"></a>
 <a href="#Sommaire">Erreur : </a>
